@@ -1,21 +1,60 @@
 # Import package and modules
-from PIL import Image
 import os
 from modules import encode
 
 # Global variable
 MY_PATH = os.getcwd().replace(os.sep, '/')
 
+class colors() : 
+    # Give text styling in terminal
+
+    WARNING = '\033[93m'
+    ENDC = '\033[0m'
+    BLACK = "\033[0;30m"
+    RED = "\033[0;31m"
+    GREEN = "\033[0;32m"
+    BROWN = "\033[0;33m"
+    BLUE = "\033[0;34m"
+    PURPLE = "\033[0;35m"
+    CYAN = "\033[0;36m"
+    LIGHT_GRAY = "\033[0;37m"
+    DARK_GRAY = "\033[1;30m"
+    LIGHT_RED = "\033[1;31m"
+    LIGHT_GREEN = "\033[1;32m"
+    YELLOW = "\033[1;33m"
+    LIGHT_BLUE = "\033[1;34m"
+    LIGHT_PURPLE = "\033[1;35m"
+    LIGHT_CYAN = "\033[1;36m"
+    LIGHT_WHITE = "\033[1;37m"
+    BOLD = "\033[1m"
+    FAINT = "\033[2m"
+    ITALIC = "\033[3m"
+    UNDERLINE = "\033[4m"
+    BLINK = "\033[5m"
+    NEGATIVE = "\033[7m"
+    CROSSED = "\033[9m"
+
 class doEncode() :
 
     def __init__(self) :
         self.image_file_name = input('Image file name : ')
+        self.check_file_extension(file_name=self.image_file_name)
 
-    def image_path(self) :
-        IMG_PATH = f"{MY_PATH}/Images/{self.image_file_name}"
-        embed_text_into_img = encode.convertText()
-        embed_text_into_img.embed_text(image_path=IMG_PATH)
+    def check_file_extension(self, file_name) :
+        if self.image_file_name.endswith(('.jpg','.jpeg','.webp','.png','.gif','.tif','.tiff','.ico')) :
+            self.image_path(file_name=file_name)
+        else :
+            print(f"{colors.RED}YOUR FILE DOES NOT SUPPORTED IN THIS PROGRAM{colors.ENDC}\n{colors.YELLOW}Only support : .jpg, .jpeg, .png, .webp, .gif, .tif, .tiff, .ico{colors.ENDC}")
 
+    def image_path(self, file_name) :
+        IMG_PATH = f"{MY_PATH}/Images/{file_name}"
+
+        if os.path.exists(IMG_PATH) :
+            embed_text_into_img = encode.convertText()
+            embed_text_into_img.embed_text(image_path=IMG_PATH, file_name=self.image_file_name)
+        else :
+            return print(f"{colors.WARNING}The Image does not exist in this path{colors.ENDC}")
+            
 
 class userInterfaces :
 
@@ -35,7 +74,7 @@ class userInterfaces :
 
         while users_ans in ('y','n') :
             if users_ans == 'y' :
-                do_convert = doEncode()
+                doEncode()
                 break
             else :
                 print('Stop.')
