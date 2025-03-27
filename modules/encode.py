@@ -1,5 +1,6 @@
 # Convert Text into Binaries and embed it into given image
 from PIL import Image
+import os
 
 class convertText :
 
@@ -15,15 +16,14 @@ class convertText :
             char_unicode = format(ord(i),'08b')
             character_bin.append(char_unicode)
         
-        print(character_bin)
         return character_bin
 
     def embed_text(self, image_path, file_name) :
         image = Image.open(image_path)
-        print(image.mode)
 
         if image.mode != 'RGB' :
-            my_image = image.convert('RGB')
-            my_image.save(f"{file_name}.jpeg")
+            image = image.convert('RGB')
+            new_file_name = os.path.splitext(file_name)[0]
+            image.save(f"{new_file_name}.jpeg",'JPEG')
 
         
