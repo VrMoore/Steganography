@@ -41,19 +41,19 @@ class doEncode() :
         self.check_file_extension(file_name=self.image_file_name)
 
     def check_file_extension(self, file_name) :
-        if self.image_file_name.endswith(('.jpg','.jpeg','.webp','.png','.gif','.tif','.tiff','.ico')) :
+        if self.image_file_name.endswith(('.jpg','.jpeg','.webp','.png','.gif','.tif','.tiff','.ico','.bmp')) :
             self.image_path(file_name=file_name)
         else :
-            print(f"{colors.RED}YOUR FILE DOES NOT SUPPORTED IN THIS PROGRAM{colors.ENDC}\n{colors.YELLOW}Only support : .jpg, .jpeg, .png, .webp, .gif, .tif, .tiff, .ico{colors.ENDC}")
+            print(f"{colors.RED}UNSUPPORTED FILE TYPE{colors.ENDC}\n{colors.YELLOW}Only support : .jpg, .jpeg, .png, .webp, .gif, .tif, .tiff, .ico{colors.ENDC}")
 
     def image_path(self, file_name) :
         IMG_PATH = f"{MY_PATH}/Images/{file_name}"
 
         if os.path.exists(IMG_PATH) :
-            embed_text_into_img = encode.convertText()
-            embed_text_into_img.embed_text(image_path=IMG_PATH, file_name=self.image_file_name)
+            convert_image_to_jpeg = encode.convertText()
+            convert_image_to_jpeg.convert_image(image_path=IMG_PATH, file_name=self.image_file_name)
         else :
-            return print(f"{colors.WARNING}The Image does not exist in this path{colors.ENDC}")
+            return print(f"{colors.WARNING}The image does not exist in this path{colors.ENDC}")
             
 
 class userInterfaces :
@@ -69,18 +69,16 @@ class userInterfaces :
 
 
     def ask_user(self) :
+        
         users_ans = input('Do you want to continue? (y/n) : ')
         users_ans = users_ans.lower()
 
-        while users_ans in ('y','n') :
-            if users_ans == 'y' :
-                doEncode()
-                break
-            else :
-                print('Stop.')
-                break
+        if users_ans == 'y' :
+            doEncode()
+        elif users_ans == 'n':
+            print('Good Bye :)')
         else :
-            print('Invalid input.')
+            print(f'{colors.WARNING}Invalid input.{colors.ENDC}')
 
 if __name__ == '__main__' :
     run = userInterfaces()

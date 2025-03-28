@@ -6,7 +6,6 @@ class convertText :
 
     def __init__(self) :
         self.user_secret_text = input('Input your text : ')
-
         self.convert_to_binary(user_secret_text=self.user_secret_text)
 
     def convert_to_binary(self, user_secret_text : str) -> list:
@@ -18,12 +17,19 @@ class convertText :
         
         return character_bin
 
-    def embed_text(self, image_path, file_name) :
+    def convert_image(self, image_path, file_name) :
         image = Image.open(image_path)
+        new_file_name = os.path.splitext(file_name)[0]
 
-        if image.mode != 'RGB' :
+        if image.mode != 'RGBA' :
+            # Background remover doesnt work as intended
+
+            bg_image = Image.new('RGBA',size=image.size,color=(0,0,0))
+            bg_image.paste(image, (0,0), image.split()[3])
+            bg_image = bg_image.convert('RGB')
+
+            bg_image.save(f"{new_file_name}.bmp",'BMP')
+        else :
             image = image.convert('RGB')
-            new_file_name = os.path.splitext(file_name)[0]
-            image.save(f"{new_file_name}.jpeg",'JPEG')
+            image.save(f"{new_file_name}.bmp",'BMP')
 
-        
