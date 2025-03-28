@@ -37,24 +37,27 @@ class colors() :
 class doEncode() :
 
     def __init__(self) :
+        self.encode = encode.convertText()
         self.image_file_name = input('Image file name : ')
+        self.user_secret_text = input('Input your text : ')  
+        self.IMG_PATH = f"{MY_PATH}/Images/{self.image_file_name}"
+        self.encode.embed_text(image_path=self.IMG_PATH, secret_text=self.user_secret_text)
         self.check_file_extension(file_name=self.image_file_name)
 
-    def check_file_extension(self, file_name) :
+    def check_file_extension(self, file_name : str) :
         if self.image_file_name.endswith(('.jpg','.jpeg','.webp','.png','.gif','.tif','.tiff','.ico','.bmp')) :
-            self.image_path(file_name=file_name)
+            self.image_converter(file_name=file_name)
         else :
             print(f"{colors.RED}UNSUPPORTED FILE TYPE{colors.ENDC}\n{colors.YELLOW}Only support : .jpg, .jpeg, .png, .webp, .gif, .tif, .tiff, .ico{colors.ENDC}")
 
-    def image_path(self, file_name) :
-        IMG_PATH = f"{MY_PATH}/Images/{file_name}"
+    def image_converter(self, file_name : str) :
 
-        if os.path.exists(IMG_PATH) :
-            convert_image_to_jpeg = encode.convertText()
-            convert_image_to_jpeg.convert_image(image_path=IMG_PATH, file_name=self.image_file_name)
+        if os.path.exists(self.IMG_PATH) :
+            self.encode.convert_image(image_path=self.IMG_PATH, file_name=self.image_file_name)
         else :
             return print(f"{colors.WARNING}The image does not exist in this path{colors.ENDC}")
-            
+
+
 
 class userInterfaces :
 
@@ -66,7 +69,8 @@ class userInterfaces :
             I will be your agent to slip a text between image binaries.
             {'='*20}\n
         """)
-
+        
+        self.ask_user()
 
     def ask_user(self) :
         
@@ -82,4 +86,3 @@ class userInterfaces :
 
 if __name__ == '__main__' :
     run = userInterfaces()
-    run.ask_user()
