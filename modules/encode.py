@@ -21,15 +21,18 @@ class convertText :
         image = Image.open(image_path)
         new_file_name = os.path.splitext(file_name)[0]
 
-        if image.mode != 'RGBA' :
+        if image.mode != 'RGB' :
             # Background remover doesnt work as intended
 
-            bg_image = Image.new('RGBA',size=image.size,color=(0,0,0))
-            bg_image.paste(image, (0,0), image.split()[3])
+            bg_image = Image.new('RGBA',size=image.size,color=(255,255,255,0))
+            bg_image.paste(image, (0,0), image)
             bg_image = bg_image.convert('RGB')
+            image = bg_image
 
-            bg_image.save(f"{new_file_name}.bmp",'BMP')
+            image.save(f"{new_file_name}.bmp",'BMP')
         else :
             image = image.convert('RGB')
             image.save(f"{new_file_name}.bmp",'BMP')
 
+    def embed_text(self) :
+        pass
