@@ -13,13 +13,9 @@ class convertText :
     def save_result(self) -> str:
         current_path = os.getcwd().replace(os.sep, '/')
         save_result_image_path = f"{current_path}/IMG RES"
-        print(save_result_image_path)
 
-        if os.path.isdir(save_result_image_path) :
-            return save_result_image_path
-        else :
-            os.makedirs(save_result_image_path)
-            return save_result_image_path
+        os.makedirs(name=save_result_image_path, exist_ok=True)
+        return save_result_image_path
 
     def convert_to_binary(self, user_secret_text : str) -> list:
         character_bin = []
@@ -43,10 +39,10 @@ class convertText :
         else :
             image = image.convert('RGB')
 
-        image.save(f"{self.save_result()}/{self.file_name}.bmp",'BMP')
+        image.save(f"{self.save_result()}/{self.new_file_name}.bmp",'BMP')
 
-    def embed_text(self, image_path : str, secret_text : str) :
+    def embed_text(self, image_path : str,secret_text : str) :
         image = Image.open(image_path)
         blue_channel = image.getchannel('B')
-        blue_channel.save(f"{self.save_result()}/{self.file_name}--blue-channel.bmp",'BMP')
+        blue_channel.save(f"{self.save_result()}/{self.new_file_name}--blue-channel.bmp",'BMP')
                 

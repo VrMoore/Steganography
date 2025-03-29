@@ -42,22 +42,23 @@ class doEncode() :
         
         self.encode = encode.convertText(file_name=self.image_file_name, secret_text=self.user_secret_text)
         self.IMG_PATH = f"{MY_PATH}/Images/{self.image_file_name}"
-        self.encode.embed_text(image_path=self.IMG_PATH, secret_text=self.user_secret_text)
         self.check_file_extension(file_name=self.image_file_name)
 
     def check_file_extension(self, file_name : str) :
         if self.image_file_name.endswith(('.jpg','.jpeg','.webp','.png','.gif','.tif','.tiff','.ico','.bmp')) :
+            self.encode.convert_image(image_path=self.IMG_PATH)
             self.image_converter(file_name=file_name)
         else :
             print(f"{colors.RED}UNSUPPORTED FILE TYPE{colors.ENDC}\n{colors.YELLOW}Only support : .jpg, .jpeg, .png, .webp, .gif, .tif, .tiff, .ico{colors.ENDC}")
 
     def image_converter(self, file_name : str) :
+        cache_image_file = os.path.splitext(file_name)[0]
+        cache_path = f"{MY_PATH}/IMG RES/{cache_image_file}.bmp"
 
         if os.path.exists(self.IMG_PATH) :
-            self.encode.convert_image(image_path=self.IMG_PATH)
+            self.encode.embed_text(image_path=cache_path, secret_text=self.user_secret_text)
         else :
             return print(f"{colors.WARNING}The image does not exist in this path{colors.ENDC}")
-
 
 
 class userInterfaces :
