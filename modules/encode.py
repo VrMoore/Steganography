@@ -47,6 +47,6 @@ class convertText :
 
     def embed_text(self, image_path : str, secret_text : str) :
         image = Image.open(image_path)
-        red_channel = image.getchannel('B')
-        red_channel.save(f"{self.save_result()}/{self.file_name}--red-channel.bmp",'BMP')
+        blue_channel = image.getchannel('B')
+        blue_channel.save(f"{self.save_result()}/{self.file_name}--blue-channel.bmp",'BMP')
                 
