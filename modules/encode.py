@@ -4,8 +4,22 @@ import os
 
 class convertText :
 
-    def __init__(self) :
-        pass
+    def __init__(self, file_name, secret_text) -> None:
+        self.file_name = file_name
+        self.secret_text = secret_text
+        self.new_file_name = os.path.splitext(file_name)[0]
+        self.save_result()
+
+    def save_result(self) -> str:
+        current_path = os.getcwd().replace(os.sep, '/')
+        save_result_image_path = f"{current_path}/IMG RES"
+        print(save_result_image_path)
+
+        if os.path.isdir(save_result_image_path) :
+            return save_result_image_path
+        else :
+            os.makedirs(save_result_image_path)
+            return save_result_image_path
 
     def convert_to_binary(self, user_secret_text : str) -> list:
         character_bin = []
@@ -16,9 +30,8 @@ class convertText :
         
         return character_bin
 
-    def convert_image(self, image_path : str, file_name : str) -> None :
+    def convert_image(self, image_path : str) -> None :
         image = Image.open(image_path)
-        new_file_name = os.path.splitext(file_name)[0]
 
         if image.mode != 'RGB' :
 
@@ -30,9 +43,10 @@ class convertText :
         else :
             image = image.convert('RGB')
 
-        image.save(f"{new_file_name}.bmp",'BMP')
+        image.save(f"{self.save_result()}/{self.file_name}.bmp",'BMP')
 
     def embed_text(self, image_path : str, secret_text : str) :
         image = Image.open(image_path)
-        print(image.size)
-        print(image.load())
+        red_channel = image.getchannel('B')
+        red_channel.save(f"{self.save_result()}/{self.file_name}--red-channel.bmp",'BMP')
+                

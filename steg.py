@@ -37,9 +37,10 @@ class colors() :
 class doEncode() :
 
     def __init__(self) :
-        self.encode = encode.convertText()
         self.image_file_name = input('Image file name : ')
         self.user_secret_text = input('Input your text : ')  
+        
+        self.encode = encode.convertText(file_name=self.image_file_name, secret_text=self.user_secret_text)
         self.IMG_PATH = f"{MY_PATH}/Images/{self.image_file_name}"
         self.encode.embed_text(image_path=self.IMG_PATH, secret_text=self.user_secret_text)
         self.check_file_extension(file_name=self.image_file_name)
@@ -53,7 +54,7 @@ class doEncode() :
     def image_converter(self, file_name : str) :
 
         if os.path.exists(self.IMG_PATH) :
-            self.encode.convert_image(image_path=self.IMG_PATH, file_name=self.image_file_name)
+            self.encode.convert_image(image_path=self.IMG_PATH)
         else :
             return print(f"{colors.WARNING}The image does not exist in this path{colors.ENDC}")
 
