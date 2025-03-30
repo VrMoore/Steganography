@@ -44,5 +44,17 @@ class convertText :
     def embed_text(self, image_path : str,secret_text : str) :
         image = Image.open(image_path)
         blue_channel = image.getchannel('B')
+        width, height  = blue_channel.size
+        secret_text_list = self.convert_to_binary(user_secret_text=secret_text)
+
+        for x in range(width // 2) :
+            for y in range(height) :
+                blue_pixels = blue_channel.getpixel((x,y))
+                pixels_data = f"{blue_pixels:08b}"
+                print(pixels_data)
+                
+
+
+
         blue_channel.save(f"{self.save_result()}/{self.new_file_name}--blue-channel.bmp",'BMP')
                 
