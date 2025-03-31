@@ -21,9 +21,10 @@ class convertText :
         character_bin = []
         
         for i in user_secret_text :
-            char_unicode = format(ord(i),'08b')
+            char_unicode = ord(i)
             character_bin.append(char_unicode)
         
+        print(character_bin)
         return character_bin
 
     def convert_image(self, image_path : str) -> None :
@@ -43,18 +44,29 @@ class convertText :
 
     def embed_text(self, image_path : str,secret_text : str) :
         image = Image.open(image_path)
+
         blue_channel = image.getchannel('B')
+        blue_image = blue_channel.copy()
+        pixels = blue_image.load()
         width, height  = blue_channel.size
-        secret_text_list = self.convert_to_binary(user_secret_text=secret_text)
+
+        secret_text_data = self.convert_to_binary(user_secret_text=secret_text) 
+        index = 0
+        message_length = len(secret_text_data)
 
         for x in range(width // 2) :
             for y in range(height) :
-                blue_pixels = blue_channel.getpixel((x,y))
-                pixels_data = f"{blue_pixels:08b}"
-                print(pixels_data)
-                
+                if index >= message_length :
+                    print('Successfully encoded')
+                    break
 
+                blue_pixels = pixels[x,y]
+                blue_pixels = (blue_pixels & 0xFE) | (secret_text_data[index])
+                pixels[x,y] = blue_pixels
+                index += 1
 
-
+            if index >= message_length :
+                break               
+            
         blue_channel.save(f"{self.save_result()}/{self.new_file_name}--blue-channel.bmp",'BMP')
                 
