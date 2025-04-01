@@ -1,0 +1,7 @@
+myenv
+/myenv
+dump
+/dump
+__pycache__/
+*.pyc 
+*.pyo
