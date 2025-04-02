@@ -17,15 +17,23 @@ class convertText :
         os.makedirs(name=save_result_image_path, exist_ok=True)
         return save_result_image_path
 
-    def convert_to_binary(self, user_secret_text : str) -> list:
+    def convert_to_ascii(self, user_secret_text : str) -> list[int]:
         character_bin = []
         
         for i in user_secret_text :
             char_unicode = ord(i)
             character_bin.append(char_unicode)
         
-        print(character_bin)
-        return character_bin
+        encrypted_data = self.text_encryption(secret_text=character_bin)
+        return encrypted_data
+
+    def text_encryption(self, secret_text : list[int]) -> list[int]:
+        secret_text_length = len(secret_text)
+        salt = os.urandom(secret_text_length)
+        salt = list(salt)
+
+        encrypt = [x ^ salt[i] for i,x in enumerate(secret_text)]
+        return encrypt
 
     def convert_image(self, image_path : str) -> None :
         image = Image.open(image_path)
@@ -50,7 +58,7 @@ class convertText :
         pixels = blue_image.load()
         width, height  = blue_channel.size
 
-        secret_text_data = self.convert_to_binary(user_secret_text=secret_text) 
+        secret_text_data = self.convert_to_ascii(user_secret_text=secret_text) 
         index = 0
         message_length = len(secret_text_data)
 
