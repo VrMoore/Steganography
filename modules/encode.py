@@ -8,14 +8,14 @@ class convertText :
         self.file_name = file_name
         self.secret_text = secret_text
         self.new_file_name = os.path.splitext(file_name)[0]
-        self.save_result()
 
-    def save_result(self) -> str:
-        current_path = os.getcwd().replace(os.sep, '/')
-        save_result_image_path = f"{current_path}/IMG RES"
+        self.current_path = os.getcwd().replace(os.sep, '/')
+        self.save_result_image_path = f"{self.current_path}/IMG RES"
+        self.save_result(image_path=self.save_result_image_path)
 
-        os.makedirs(name=save_result_image_path, exist_ok=True)
-        return save_result_image_path
+    def save_result(self, image_path : str) -> None:
+        os.makedirs(name=self.save_result_image_path, exist_ok=True)
+        return 
 
     def convert_to_ascii(self, user_secret_text : str) -> list[int]:
         character_bin = []
@@ -33,7 +33,17 @@ class convertText :
         salt = list(salt)
 
         encrypt = [x ^ salt[i] for i,x in enumerate(secret_text)]
+        self.write_data(salt=salt)
         return encrypt
+
+    def write_data(self, salt : list[int]) -> None :
+        file_name = 'dump.md'
+        file_name_path = f"{self.save_result_image_path}/dump.md"
+
+        with open(file=file_name_path, mode='w') as file : 
+            file.write(f"FILE_NAME = {self.new_file_name}.bmp\n")
+            file.write(f"SECRET_TEXT = {self.secret_text}\n")
+            file.write(F"SALT = {salt}")
 
     def convert_image(self, image_path : str) -> None :
         image = Image.open(image_path)
@@ -48,7 +58,7 @@ class convertText :
         else :
             image = image.convert('RGB')
 
-        image.save(f"{self.save_result()}/{self.new_file_name}.bmp",'BMP')
+        image.save(f"{self.save_result_image_path}/{self.new_file_name}.bmp",'BMP')
 
     def embed_text(self, image_path : str,secret_text : str) :
         image = Image.open(image_path)
@@ -76,5 +86,5 @@ class convertText :
             if index >= message_length :
                 break               
             
-        blue_channel.save(f"{self.save_result()}/{self.new_file_name}--blue-channel.bmp",'BMP')
+        blue_channel.save(f"{self.save_result_image_path}/{self.new_file_name}--blue-channel.bmp",'BMP')
                 
