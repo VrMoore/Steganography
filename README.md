@@ -1,6 +1,6 @@
 # Steganography
 
-Steganography is an way of hide data in a file. It can be used in any file form, including text, image, audio or video content. For added security, steganography can be also combined with encryption. That will make unauthorized people can't read the secret text immediately.
+Steganography is an way of hide data in a file. It can be used in any file form, including text, image, audio or video content. For added security, steganography can be also combined with encryption. Ensurinhg only authorizes parties can access the data.
 
  >This repository still in build. The code or resource may change during development.
 
