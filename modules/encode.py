@@ -28,6 +28,7 @@ class convertText :
 
     def text_encryption(self, secret_text : list[int]) -> list[int]:
         secret_text_length = len(secret_text)
+
         salt = os.urandom(secret_text_length)
         salt = list(salt)
 
