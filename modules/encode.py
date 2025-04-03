@@ -13,9 +13,8 @@ class convertText :
         self.save_result_image_path = f"{self.current_path}/IMG RES"
         self.save_result(image_path=self.save_result_image_path)
 
-    def save_result(self, image_path : str) -> None:
-        os.makedirs(name=self.save_result_image_path, exist_ok=True)
-        return 
+    def save_result(self, image_path) -> None:
+        os.makedirs(name=image_path, exist_ok=True)
 
     def convert_to_ascii(self, user_secret_text : str) -> list[int]:
         character_bin = []
@@ -63,7 +62,8 @@ class convertText :
     def embed_text(self, image_path : str,secret_text : str) :
         image = Image.open(image_path)
 
-        blue_channel = image.getchannel('B')
+        red_channel, green_channel, blue_channel = image.split()
+
         blue_image = blue_channel.copy()
         pixels = blue_image.load()
         width, height  = blue_channel.size
@@ -72,8 +72,8 @@ class convertText :
         index = 0
         message_length = len(secret_text_data)
 
-        for x in range(width // 2) :
-            for y in range(height) :
+        for y in range(height) :
+            for x in range(width // 2) :
                 if index >= message_length :
                     print('Successfully encoded')
                     break
@@ -86,5 +86,6 @@ class convertText :
             if index >= message_length :
                 break               
             
-        blue_channel.save(f"{self.save_result_image_path}/{self.new_file_name}--blue-channel.bmp",'BMP')
-                
+        merge_image = Image.merge(mode='RGB', bands=(red_channel, green_channel, blue_channel))
+        merge_image.save(f"{self.save_result_image_path}/{self.new_file_name}.bmp",'BMP')
+                 
