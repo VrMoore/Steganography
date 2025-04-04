@@ -126,7 +126,7 @@ class doDecode() :
         if image_file_name.endswith('.bmp') :
             return True
         else :
-            print(f"{colors.WARNING}UNSUPPORTED FILE TYPE,===={colors.ENDC}")
+            print(f"{colors.WARNING}UNSUPPORTED FILE TYPE{colors.ENDC}")
             return False
 
 class userInterfaces :
