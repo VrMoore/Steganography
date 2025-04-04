@@ -54,15 +54,15 @@ class deconvertText() :
                     break
 
                 blue_pixels = pixels[x,y]
-
-                decrypted_text = blue_pixels ^ salt[index]
+                print(salt[index])
+                decrypted_text = (blue_pixels & 0xFE) | (salt[index])
                 message.append(chr(decrypted_text))
                 index += 1
 
             if index >= len(salt) :
                 break
             
-        print(message)
+        print(''.join(message))
 
     def print_text(self) :
         pass
