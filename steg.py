@@ -54,8 +54,8 @@ class doEncode() :
                 Return : None
             ```
         """
-        self.image_file_name = input('| Image file name : ')
-        self.user_secret_text = input('| Input your text : ')  
+        self.image_file_name = input('|  Image file name : ')
+        self.user_secret_text = input('|  Input your text : ')  
         
         self.encode = encode.convertText(file_name=self.image_file_name, secret_text=self.user_secret_text)
         self.IMG_PATH = f"{MY_PATH}/Images/{self.image_file_name}"
@@ -116,7 +116,18 @@ class doEncode() :
 class doDecode() :
 
     def __init__(self) :
-        pass
+        self.image_file_name = input('|  Image file name : ')
+
+        self.CACHE_PATH = f"{MY_PATH}/IMG RES/"
+        self.check_file_extension(image_file_name=self.image_file_name, cache_path=self.CACHE_PATH)
+        self.decode = decode.deconvertText(image_file_name=self.image_file_name, cache_path=self.CACHE_PATH)
+
+    def check_file_extension(self, image_file_name : str, cache_path : str) -> bool :
+        if image_file_name.endswith('.bmp') :
+            return True
+        else :
+            print(f"{colors.WARNING}UNSUPPORTED FILE TYPE,===={colors.ENDC}")
+            return False
 
 class userInterfaces :
     """
