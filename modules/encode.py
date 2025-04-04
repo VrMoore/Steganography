@@ -140,9 +140,11 @@ class convertText :
         file_name_path = f"{self.save_result_image_path}/dump.md"
 
         with open(file=file_name_path, mode='w') as file : 
-            file.write(f"FILE_NAME = {self.new_file_name}.bmp\n")
-            file.write(f"SECRET_TEXT = {self.secret_text}\n")
-            file.write(F"SALT = {salt}")
+            file.write(f"FILE_NAME ={self.new_file_name}.bmp")
+            file.write('\n')
+            file.write(f"SECRET_TEXT ={self.secret_text}")
+            file.write('\n')
+            file.write(F"SALT ={salt}")
 
     def convert_image(self, image_path : str) -> None :
         """
