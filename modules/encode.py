@@ -108,8 +108,12 @@ class convertText :
         salt = os.urandom(secret_text_length)
         salt = list(salt)
 
+        print(salt, 'ori salt')
+
         # Take each character individuallt and perform XOR operation
         encrypt = [x ^ salt[i] for i,x in enumerate(secret_text)]
+
+        # Pass salt into write_data method
 
         encrypt_data_bin = []
 
@@ -119,12 +123,19 @@ class convertText :
 
         encrypt_data_bin = ''.join(x for x in encrypt_data_bin)
 
-        # Pass salt into write_data method
-        self.write_data(salted=salt, ori_salt=salt)
+        salt_bin = []
 
+        for i in salt :
+            i = f"{i:08b}"
+            salt_bin.append(i)
+
+        salt_bin = ''.join(x for x in salt_bin)
+
+        self.write_data(salted=encrypt, ori_salt=salt_bin)
+        
         return encrypt_data_bin
 
-    def write_data(self, salted : list[int], ori_salt : list[int]) -> None :
+    def write_data(self, salted : list[int], ori_salt : list[str]) -> None :
         """
             Write all important information into markdown file.
 
@@ -152,7 +163,7 @@ class convertText :
             file.write('\n')
             file.write(f"ORIGINAL SALT ={ori_salt}")
             file.write('\n')
-            file.write(F"SALTED DATA ={salted}")
+            file.write(f'SALTED ={salted}')
 
     def convert_image(self, image_path : str) -> None :
         """
@@ -224,7 +235,8 @@ class convertText :
         pixels = blue_image.load()
         width, height  = blue_channel.size
 
-        secret_text_data = self.convert_to_ascii(user_secret_text=secret_text) 
+        secret_text_data = self.convert_to_ascii(user_secret_text=secret_text)
+        print(secret_text_data, 'salted') 
         index = 0
         message_length = len(secret_text_data)
 
@@ -236,9 +248,11 @@ class convertText :
                     break
 
                 blue_pixels = pixels[x,y]
+                print(blue_pixels, 'original')
 
                 # Do LSB using 0xFE which make 7 bit untouched with the LSB (Least Significant Bit) left.
-                blue_pixels = (blue_pixels & 0xFE) | (int(secret_text_data[index]))
+                blue_pixels = (blue_pixels & 0xFE) ^ (int(secret_text_data[index]))
+                print(blue_pixels, 'encrypted')
                 pixels[x,y] = blue_pixels
                 index += 1
 
