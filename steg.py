@@ -52,10 +52,15 @@ class doEncode() :
 
             ```
                 Return : None
-            ```
+            ```y
         """
+        
         self.image_file_name = input('|  Image file name : ')
         self.user_secret_text = input('|  Input your text : ')  
+
+        # Remove lead and trail spaces
+        self.image_file_name = self.image_file_name.strip()
+        self.user_secret_text = self.user_secret_text.strip()
         
         self.encode = encode.convertText(file_name=self.image_file_name, secret_text=self.user_secret_text)
         self.IMG_PATH = f"{MY_PATH}/Images/{self.image_file_name}"

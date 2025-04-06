@@ -56,7 +56,7 @@ class convertText :
 
         os.makedirs(name=image_path, exist_ok=True)
 
-    def convert_to_ascii(self, user_secret_text : str) -> list[int]:
+    def convert_to_ascii(self, user_secret_text : str) -> str:
         """
             Convert given secret text into ASCII number.
 
@@ -85,7 +85,7 @@ class convertText :
         encrypted_data = self.text_encryption(secret_text=character_bin)
         return encrypted_data
 
-    def text_encryption(self, secret_text : list[int]) -> list[int]:
+    def text_encryption(self, secret_text : list[int]) -> str:
         """
             Encrypt secret text given by user.
 
@@ -111,12 +111,20 @@ class convertText :
         # Take each character individuallt and perform XOR operation
         encrypt = [x ^ salt[i] for i,x in enumerate(secret_text)]
 
+        encrypt_data_bin = []
+
+        for i in encrypt :
+            i = f"{i:08b}"
+            encrypt_data_bin.append(i)
+
+        encrypt_data_bin = ''.join(x for x in encrypt_data_bin)
+
         # Pass salt into write_data method
-        self.write_data(salt=salt)
+        self.write_data(salted=salt, ori_salt=salt)
 
-        return encrypt
+        return encrypt_data_bin
 
-    def write_data(self, salt : list[int]) -> None :
+    def write_data(self, salted : list[int], ori_salt : list[int]) -> None :
         """
             Write all important information into markdown file.
 
@@ -142,9 +150,9 @@ class convertText :
         with open(file=file_name_path, mode='w') as file : 
             file.write(f"FILE_NAME ={self.new_file_name}.bmp")
             file.write('\n')
-            file.write(f"SECRET_TEXT ={self.secret_text}")
+            file.write(f"ORIGINAL SALT ={ori_salt}")
             file.write('\n')
-            file.write(F"SALT ={salt}")
+            file.write(F"SALTED DATA ={salted}")
 
     def convert_image(self, image_path : str) -> None :
         """
@@ -222,7 +230,7 @@ class convertText :
 
         # Iterate only left part of the image, so it can run faster
         for y in range(height) :
-            for x in range(width // 2) :
+            for x in range(width) :
                 if index >= message_length :
                     print('Successfully encoded')
                     break
@@ -230,7 +238,7 @@ class convertText :
                 blue_pixels = pixels[x,y]
 
                 # Do LSB using 0xFE which make 7 bit untouched with the LSB (Least Significant Bit) left.
-                blue_pixels = (blue_pixels & 0xFE) | (secret_text_data[index])
+                blue_pixels = (blue_pixels & 0xFE) | (int(secret_text_data[index]))
                 pixels[x,y] = blue_pixels
                 index += 1
 

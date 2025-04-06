@@ -1,6 +1,7 @@
 #  Import libraries
 import os
 from PIL import Image
+from ast import literal_eval
 
 class deconvertText() :
 
@@ -11,31 +12,32 @@ class deconvertText() :
         self.image_cache = os.path.splitext(self.image_file_name)[0]
         self.img_path = f"{self.cache_path}/{self.image_cache}.bmp"
 
-        self.text_salt = self.get_text(cache_path=self.cache_path)
-        self.text_decryption(cache_path=self.img_path, salt=self.text_salt)
+        self.text_salt, self.text_bin = self.get_text(cache_path=self.cache_path)
+        self.text_decryption(cache_path=self.img_path, salt=self.text_salt, text_bin=self.text_bin)
 
-    def get_text(self, cache_path : str) -> list[int] :
+    def get_text(self, cache_path : str) -> list :
         md_file = 'dump.md'
         md_file_path = f'{cache_path}/{md_file}'
 
         with open(file=md_file_path, mode='r') as file :
             content = file.readlines()
         
-        image_salt : list = content[1]
+        text_bin = content[1]
+        text_bin = text_bin.split('=')[1]
+
+        text_bin.rstrip('=')
+
+        print(type(text_bin) ,text_bin, 'text bin')
+
+        image_salt : list = content[2]
         image_salt_data = image_salt.rsplit('=', 1)[1]
 
-        salt = []
+        # Turn into list data type
+        image_salt_data = literal_eval(image_salt_data)
 
-        for char in image_salt_data :
-            character = ord(char)
-            salt.append(character)
+        return [image_salt_data, text_bin]
 
-        # remove annonying \n in the last element
-        del salt[-1]
-
-        return salt
-
-    def text_decryption(self, cache_path : str, salt : list[int]) :
+    def text_decryption(self, cache_path : str, salt : list[int], text_bin : list[str]) :
         image = Image.open(cache_path)
 
         # Get only blue channel
@@ -47,7 +49,7 @@ class deconvertText() :
         message : list = []
         # Iterate only left part of the image, so it can run faster
         for y in range(height) :
-            for x in range(width // 2) :
+            for x in range(width) :
 
                 if index >= len(salt) :
                     print("Message have been decoded")
@@ -55,8 +57,12 @@ class deconvertText() :
 
                 blue_pixels = pixels[x,y]
                 print(salt[index])
-                decrypted_text = (blue_pixels & 0xFE) | (salt[index])
-                message.append(chr(decrypted_text))
+
+                original_pixel = (blue_pixels & 0xFE) | (salt[index])
+                
+                # decrypted_text = (blue_pixels & 0xFE) | ((salt[index]) ^ (int(text_bin[index])))
+                # print(decrypted_text, 'decrypted')  
+                # message.append(chr(decrypted_text))
                 index += 1
 
             if index >= len(salt) :
