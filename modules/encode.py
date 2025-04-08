@@ -80,79 +80,21 @@ class convertText :
         # Iterate each character and convert into ASCII
         for i in user_secret_text :
             char_unicode = ord(i)
-            character_bin.append(char_unicode)
+            char_bin = f"{char_unicode:08b}"
+            print(char_bin,'char_bin')
+            character_bin.append(char_bin)
         
-        encrypted_data = self.text_encryption(secret_text=character_bin)
-        return encrypted_data
+        print(character_bin)
 
-    def text_encryption(self, secret_text : list[int]) -> str:
-        """
-            Encrypt secret text given by user.
+        data_bin_len = len(character_bin)
+        self.file_write(text_len=data_bin_len)
 
-            Generate random salt from the length of given secret text. Perform XOR operation by take salt and secret text individualy.
+        character_bin = ''.join(x for x in character_bin)
 
-            *Parameters :*
-            ------------
-                secret_text : list[int]
-                    Argument passed by convert_to_ascii method where individual element represent each character of given text.
+        return character_bin
 
-            
-            ```
-                Return : list[int]
-                    Return list of integer that have been salting using os.urandom
-            ```
-        """
-        secret_text_length = len(secret_text)
-
-        # Generate random salt, easy to implement.
-        salt = os.urandom(secret_text_length)
-        salt = list(salt)
-
-        print(salt, 'ori salt')
-
-        # Take each character individuallt and perform XOR operation
-        encrypt = [x ^ salt[i] for i,x in enumerate(secret_text)]
-
-        # Pass salt into write_data method
-
-        encrypt_data_bin = []
-
-        for i in encrypt :
-            i = f"{i:08b}"
-            encrypt_data_bin.append(i)
-
-        encrypt_data_bin = ''.join(x for x in encrypt_data_bin)
-
-        salt_bin = []
-
-        for i in salt :
-            i = f"{i:08b}"
-            salt_bin.append(i)
-
-        salt_bin = ''.join(x for x in salt_bin)
-
-        self.write_data(salted=encrypt, ori_salt=salt_bin)
+    def file_write(self, text_len : int) :
         
-        return encrypt_data_bin
-
-    def write_data(self, salted : list[int], ori_salt : list[str]) -> None :
-        """
-            Write all important information into markdown file.
-
-            Write all information where later user can be shared to the corresponding receiver. Write image file name, secret text and salt.
-            Salt will be used in decryption of the image, hence it's important to save which os.urandom always generate random salt.
-
-            Paramaters : 
-            ------------
-                salt : list[int]
-                    Pass an argument of salt given by text_encryption method
-
-            
-            ```
-                Return : None
-            ```
-        """
-
         file_name = 'dump.md'
 
         # save to the IMG RES folder
@@ -161,9 +103,8 @@ class convertText :
         with open(file=file_name_path, mode='w') as file : 
             file.write(f"FILE_NAME ={self.new_file_name}.bmp")
             file.write('\n')
-            file.write(f"ORIGINAL SALT ={ori_salt}")
+            file.write(f"TEXT LENGTH ={text_len}")
             file.write('\n')
-            file.write(f'SALTED ={salted}')
 
     def convert_image(self, image_path : str) -> None :
         """
@@ -252,7 +193,6 @@ class convertText :
 
                 # Do LSB using 0xFE which make 7 bit untouched with the LSB (Least Significant Bit) left.
                 blue_pixels = (blue_pixels & 0xFE) ^ (int(secret_text_data[index]))
-                print(blue_pixels, 'encrypted')
                 pixels[x,y] = blue_pixels
                 index += 1
 

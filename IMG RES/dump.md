@@ -1,0 +1,2 @@
+FILE_NAME =cat.bmp
+TEXT LENGTH =4

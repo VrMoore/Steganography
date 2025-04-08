@@ -12,30 +12,23 @@ class deconvertText() :
         self.image_cache = os.path.splitext(self.image_file_name)[0]
         self.img_path = f"{self.cache_path}/{self.image_cache}.bmp"
 
-        self.text_salt, self.text_bin = self.get_text(cache_path=self.cache_path)
-        self.text_decryption(cache_path=self.img_path, salted=self.text_salt, ori_salt=self.text_bin)
+        self.text_length = self.get_length()
+        self.text_decryption(cache_path=self.img_path, text_length=self.text_length)
 
-    def get_text(self, cache_path : str) -> list :
+    def get_length(self) :
+
         md_file = 'dump.md'
-        md_file_path = f'{cache_path}/{md_file}'
+        md_file_path = f'{self.cache_path}/{md_file}'
 
         with open(file=md_file_path, mode='r') as file :
-            content = file.readlines()
-        
-        text_bin : list = content[1]
-        text_bin : list = text_bin.rsplit('=', 1)[1]
+            content = file.readlines() 
 
-        text_bin =text_bin[:-1]
+        text_bin_len = content[1]
+        text_bin_len = text_bin_len.rsplit('=', 1)[1]
 
-        image_salt : list = content[2]
-        image_salt_data : list = image_salt.rsplit('=', 1)[1]
+        return int(text_bin_len)
 
-        # Turn into list data type
-        image_salt_data = literal_eval(image_salt_data)
-
-        return [image_salt_data, text_bin]
-
-    def text_decryption(self, cache_path : str, salted : list[int], ori_salt : str) :
+    def text_decryption(self, cache_path : str, text_length : int) :
         image = Image.open(cache_path)
 
         # Get only blue channel
@@ -50,27 +43,26 @@ class deconvertText() :
         for y in range(height) :
             for x in range(width) :
 
-                if index >= len(ori_salt) :
+                if index >= text_length * 8 :
                     print("Message have been decoded")
                     break
 
                 blue_pixels = pixels[x,y]
 
-                decrypted_text = blue_pixels & 1
+                decrypted_text = blue_pixels ^ 1
 
-                original_text_bin = decrypted_text ^ int(ori_salt[index])
+                decrypted_text_bin = f"{decrypted_text:08b}"
 
-                message.append(original_text_bin)
-                
-                # decrypted_text = (blue_pixels & 0xFE) | ((salt[index]) ^ (int(text_bin[index])))
-                # print(decrypted_text, 'decrypted')  
-                # message.append(chr(decrypted_text))
+                message.append(decrypted_text_bin[-1])
+
                 index += 1
 
-            if index >= len(ori_salt) :
+            if index >= text_length * 8:
                 break
             
         self.load_text(text_bin=message)
+
+        print(message)
 
         return None
 
@@ -83,9 +75,11 @@ class deconvertText() :
 
         message = ''
 
-        for byte in original_text :
-            binary_str = ''.join(str(bit) for bit in byte)
-            ascii_value = int(binary_str, 2)
+        for bit in original_text :
+            char_bin = ''.join(bit)
+            ascii_value = int(char_bin, 2)  #
             message += chr(ascii_value)
+            print('===========',message,'=========')
 
-        print(message)
+
+        print(original_text)
