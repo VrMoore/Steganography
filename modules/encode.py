@@ -86,14 +86,11 @@ class convertText :
         
         print(character_bin)
 
-        data_bin_len = len(character_bin)
-        self.file_write(text_len=data_bin_len)
-
         character_bin = ''.join(x for x in character_bin)
 
         return character_bin
 
-    def file_write(self, text_len : int) :
+    def file_write(self, text_len : int, original_pixels : str) :
         
         file_name = 'dump.md'
 
@@ -105,6 +102,7 @@ class convertText :
             file.write('\n')
             file.write(f"TEXT LENGTH ={text_len}")
             file.write('\n')
+            file.write(f"ORIGINAL PIXELS ={original_pixels}")
 
     def convert_image(self, image_path : str) -> None :
         """
@@ -181,6 +179,8 @@ class convertText :
         index = 0
         message_length = len(secret_text_data)
 
+        original_pixels = []
+        
         # Iterate only left part of the image, so it can run faster
         for y in range(height) :
             for x in range(width) :
@@ -188,16 +188,20 @@ class convertText :
                     print('Successfully encoded')
                     break
 
+
                 blue_pixels = pixels[x,y]
+                original_pixels.append(blue_pixels)
                 print(blue_pixels, 'original')
 
                 # Do LSB using 0xFE which make 7 bit untouched with the LSB (Least Significant Bit) left.
-                blue_pixels = (blue_pixels & 0xFE) ^ (int(secret_text_data[index]))
+                blue_pixels = (blue_pixels & 0xFE) ^ int(secret_text_data[index])
                 pixels[x,y] = blue_pixels
                 index += 1
 
             if index >= message_length :
-                break               
+                break       
+
+        self.file_write(text_len=message_length, original_pixels=original_pixels)        
             
         # Merge the image and save to the IMG RES folder
         merge_image = Image.merge(mode='RGB', bands=(red_channel, green_channel, blue_channel))

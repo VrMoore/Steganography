@@ -12,10 +12,10 @@ class deconvertText() :
         self.image_cache = os.path.splitext(self.image_file_name)[0]
         self.img_path = f"{self.cache_path}/{self.image_cache}.bmp"
 
-        self.text_length = self.get_length()
-        self.text_decryption(cache_path=self.img_path, text_length=self.text_length)
+        self.text_length, self.original_keys = self.get_length()
+        self.text_decryption(cache_path=self.img_path, text_length=self.text_length, original_keys=self.original_keys)
 
-    def get_length(self) :
+    def get_length(self) -> list[int, list] :
 
         md_file = 'dump.md'
         md_file_path = f'{self.cache_path}/{md_file}'
@@ -23,12 +23,18 @@ class deconvertText() :
         with open(file=md_file_path, mode='r') as file :
             content = file.readlines() 
 
+        # Get length of the secret text
         text_bin_len = content[1]
         text_bin_len = text_bin_len.rsplit('=', 1)[1]
 
-        return int(text_bin_len)
+        # Get original pixels (secret key)
+        original_key = content[2]
+        original_key = original_key.rsplit('=',1)[1]
+        original_key = literal_eval(original_key)
 
-    def text_decryption(self, cache_path : str, text_length : int) :
+        return [int(text_bin_len), original_key]
+
+    def text_decryption(self, cache_path : str, text_length : int, original_keys : list) :
         image = Image.open(cache_path)
 
         # Get only blue channel
@@ -36,35 +42,27 @@ class deconvertText() :
         pixels = blue_image.load()
         height, width = blue_image.size
 
-        index : int = 0
-        message : list = []
+        index = 0
+        message_bits = []
 
-        # Iteratee from the left top
-        for y in range(height) :
-            for x in range(width) :
-
-                if index >= text_length * 8 :
-                    print("Message have been decoded")
+        for y in range(height):
+            for x in range(width):
+                if index >= text_length:
+                    print("Message has been decoded")
                     break
 
-                blue_pixels = pixels[x,y]
+                blue_pixel = pixels[x, y]
 
-                decrypted_text = blue_pixels ^ 1
-
-                decrypted_text_bin = f"{decrypted_text:08b}"
-
-                message.append(decrypted_text_bin[-1])
-
+                # Extract the LSB directly
+                bit = blue_pixel & 1
+                message_bits.append(str(bit))  # store as string for easier joining
                 index += 1
 
-            if index >= text_length * 8:
+            if index >= text_length:
                 break
-            
-        self.load_text(text_bin=message)
 
-        print(message)
+        self.load_text(text_bin=message_bits)
 
-        return None
 
     def load_text(self, text_bin : list[int]) :
         text_bin_len = len(text_bin)
